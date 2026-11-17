@@ -179,8 +179,8 @@ function HudController.init()
 	toastHolder = Instance.new("Frame")
 	toastHolder.Name = "Toasts"
 	toastHolder.BackgroundTransparency = 1
-	toastHolder.Size = UDim2.new(0.45, 0, 0.4, 0)
-	toastHolder.Position = UDim2.new(0.5, 0, 0.55, 0)
+	toastHolder.Size = UDim2.fromScale(0.45, 0.4)
+	toastHolder.Position = UDim2.fromScale(0.5, 0.55)
 	toastHolder.AnchorPoint = Vector2.new(0.5, 0)
 	toastHolder.Parent = screen
 	local list = Instance.new("UIListLayout")
