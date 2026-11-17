@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install toolchain
+        uses: CompeyDev/setup-rokit@v0.1.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check formatting
+        run: stylua --check src
+
+      - name: Lint
+        run: selene src
+
+      - name: Type check (strict Luau)
+        run: |
+          curl -sSLf -o globalTypes.d.luau https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/1.53.0/scripts/globalTypes.d.luau
+          rojo sourcemap default.project.json -o sourcemap.json
+          luau-lsp analyze --definitions=globalTypes.d.luau --sourcemap=sourcemap.json --base-luaurc=.luaurc --no-strict-dm-types src
+
+      - name: Unit tests
+        run: |
+          curl -sSLf -o luau.zip https://github.com/luau-lang/luau/releases/download/0.700/luau-ubuntu.zip
+          unzip -o -q luau.zip luau -d .luau-cli
+          ./.luau-cli/luau tests/Formulas.spec.luau
